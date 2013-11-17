@@ -1,0 +1,47 @@
+function todoDescriptionWidth(element) {
+	element.setStyle({
+		"width" : "40%"
+	});
+
+	$('addButton').observe('click', function(e) {
+		alert($("todoName").value + " : " + $("todoDescription").value);
+		operateLocalStore("add", $("todoName").value, $("todoDescription").value);
+	});
+
+};
+
+/*
+ * The method is work with local store
+ */
+function operateLocalStore(operations, key, obj) {
+
+	localStorage = Element.Storage;
+
+	switch(operations) {
+		case "add" : {
+			// Put the object into storage
+			localStorage.setItem(key, obj);
+		}
+		case "delete" : {
+			// Put the object into storage
+			localStorage.removeItem(key, obj);
+		}
+		case "retrieve" : {
+			// Put the object into storage
+			return localStorage.getItem(key, obj);
+		}
+		case "retrieveAll" : {
+			var returnObject = {};
+			for (var i in window.localStorage) {
+				val = localStorage.getItem(i);
+				value = val.split(",");
+				//splitting string inside array to get name
+				name[i] = value[1];
+				// getting name from split string
+			}
+			return localStorage.values;
+		}
+
+	}
+
+};

@@ -1,0 +1,119 @@
+(function() {
+	var BreakfastRoll = {};
+	window.BreakfastRoll = BreakfastRoll;
+
+	var template = function(name) {
+		return Mustache.compile($('#' + name + '-template').html());
+	};
+
+	BreakfastRoll.Recipe = Backbone.Model.extend({});
+
+	BreakfastRoll.Recipes = Backbone.Collection.extend({
+		localStorage : new Store("recipes")
+	});
+
+	// index view
+	BreakfastRoll.Index = Backbone.View.extend({
+		template : template('index'),
+		initialize : function() {
+			this.recipes = new BreakfastRoll.Recipes();
+			this.recipes.on('all', this.render, this);
+			// this method is to monitor the logs
+			/*
+			 this.recipes.on('all', function(){
+			 console.log("events on recipes", arguments);
+			 });
+			 */
+			this.recipes.fetch();
+		},
+		render : function() {
+			this.$el.html(this.template(this));
+			// matt : add a new form here
+
+			// this is the form view
+			var form = new BreakfastRoll.Index.Form({
+				collection : this.recipes
+			});
+			// this is the Recipes view which will list all the recipes.
+			// the order should be 1-the inputs , 2-all the recipes , 3-the form to enter the recipe
+			var recipesView = new BreakfastRoll.Index.Recipes({
+				collection : this.recipes
+			});
+			// render the recipes view
+			recipesView.render();
+			this.$('.reciepes').append(recipesView.render.el);
+
+			// matt: select all the reciepies and append the element returned by the render()
+			this.$('.reciepes').append(form.render().el);
+			return this;
+		},
+		count : function() {
+			return this.recipes.length;
+		}
+	});
+
+	BreakfastRoll.Index.Recipes = Backbone.View.extend({
+		render : function() {
+			this.$el.text("hey all the recipes go here");
+			return this;
+		}
+	});
+
+	//matt-2 : add a form that is appended to the user.
+	BreakfastRoll.Index.Form = Backbone.View.extend({
+		tagName : 'form',
+		className : 'form',
+		template : template('index-form'),
+		events : {
+			"submit" : "submit"
+		},
+
+		render : function() {
+			this.$el.html(this.template(this));
+			return this;
+		},
+		submit : function(event) {
+			event.preventDefault();
+			// the create method will create the recipes object with the values
+			this.collection.create({
+				name : this.$('input#recipe').val(),
+				ingredients : this.$('input#ingredients').val()
+			})
+			//console.log(this.$('input#recipe').val(), this.$('input#ingredients').val() );
+		}
+	});
+	/*
+	 * To do:
+	 *
+	 * * BreakfastRoll.Index.Form
+	 *   A view that renders a form which can be submitted
+	 *   to create a new recipe
+	 * * BreakfastRoll.Index should add a subview for each
+	 *   recipe in the database
+	 * * BreakfastRoll.Recipe
+	 *   A view that renders an individual recipe
+	 *   Also, a delete button to remove it
+	 */
+
+	BreakfastRoll.Router = Backbone.Router.extend({
+		initialize : function(options) {
+			this.el = options.el
+		},
+		routes : {
+			"" : "index"
+		},
+		index : function() {
+			var view = new BreakfastRoll.Index();
+			this.el.empty();
+			this.el.append(view.render().el);
+		}
+	});
+
+	BreakfastRoll.boot = function(container) {
+		container = $(container);
+		var router = new BreakfastRoll.Router({
+			el : container
+		})
+		Backbone.history.start();
+	}
+})()

@@ -1,0 +1,37 @@
+function todoDescriptionWidth(element) {
+	element.setStyle({
+		"width" : "40%"
+	});
+
+	$('addButton').observe('click', function(e) {
+		alert("test");
+		//alert(event.value+event.value);
+		//operateLocalStore("add",$("todoName").val(),$("todoDescription").val());
+	});
+
+};
+
+/*
+ * The method is work with local store
+ */
+function operateLocalStore(operations, key, obj) {
+
+	var localStorage = Element.Storage;
+
+	switch(operations) {
+		case "add" : {
+			// Put the object into storage
+			localStorage.store(key, obj);
+		}
+		case "delete" : {
+			// Put the object into storage
+			localStorage.remove(key, obj);
+		}
+		case "retrieve" : {
+			// Put the object into storage
+			localStorage.retrieve(key, obj);
+		}
+
+	}
+
+};
